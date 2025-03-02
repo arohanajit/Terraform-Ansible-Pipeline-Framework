@@ -1,0 +1,73 @@
+name: Terraform Validation
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'terraform/**'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'terraform/**'
+
+jobs:
+  terraform-validate:
+    name: Terraform Validation
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        environment: [dev, staging, prod]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.0.0
+
+      - name: Terraform Init
+        working-directory: terraform/${{ matrix.environment }}
+        run: terraform init -backend=false
+
+      - name: Terraform Validate
+        working-directory: terraform/${{ matrix.environment }}
+        run: terraform validate
+
+      - name: Terraform Format Check
+        working-directory: terraform/${{ matrix.environment }}
+        run: terraform fmt -check
+        
+      - name: Validate Module References
+        working-directory: terraform/${{ matrix.environment }}
+        run: |
+          echo "Validating module references..."
+          if ! grep -q "module" *.tf; then
+            echo "No module references found in *.tf files"
+            exit 1
+          fi
+          echo "Module references validation passed"
+          
+      - name: Check for Variable Definitions
+        working-directory: terraform/${{ matrix.environment }}
+        run: |
+          echo "Checking for variable definitions..."
+          if [ ! -f "variables.tf" ]; then
+            echo "variables.tf file not found"
+            exit 1
+          fi
+          echo "Variable definitions check passed"
+
+      - name: Terraform Security Scan
+        uses: aquasecurity/tfsec-action@v1.0.0
+        with:
+          working_directory: terraform/${{ matrix.environment }}
+          
+      - name: Terraform Docs Check
+        run: |
+          echo "Checking for required documentation in ${{ matrix.environment }} environment"
+          if [ ! -f terraform/${{ matrix.environment }}/README.md ]; then
+            echo "Warning: README.md is missing in terraform/${{ matrix.environment }}/"
+          fi 

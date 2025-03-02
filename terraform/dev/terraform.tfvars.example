@@ -1,0 +1,12 @@
+# Development Environment Variables
+# Make a copy of this file named 'terraform.tfvars' and customize as needed
+
+aws_region       = "us-west-2"
+project_name     = "terraform-ansible-pipeline"
+
+# Example resource configurations
+instance_type    = "t2.micro"
+instance_count   = 1
+vpc_cidr         = "10.0.0.0/16"
+subnet_cidrs     = ["10.0.1.0/24", "10.0.2.0/24"]
+enable_monitoring = true 

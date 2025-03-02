@@ -1,0 +1,52 @@
+---
+# Database Server Configuration Tasks
+
+- name: Install MySQL
+  apt:
+    name: 
+      - mysql-server
+      - python3-pymysql
+    state: present
+    update_cache: yes
+  tags: [install, database]
+
+- name: Configure MySQL
+  template:
+    src: mysql.cnf.j2
+    dest: /etc/mysql/mysql.conf.d/mysqld.cnf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart mysql
+  tags: [config, database]
+
+- name: Create application database
+  mysql_db:
+    name: "{{ db_name | default('application_db') }}"
+    state: present
+  tags: [setup, database]
+
+- name: Create application database user
+  mysql_user:
+    name: "{{ db_user | default('app_user') }}"
+    password: "{{ db_password | default('changeme') }}"
+    priv: "{{ db_name | default('application_db') }}.*:ALL"
+    host: "{{ db_allowed_host | default('%') }}"
+    state: present
+  tags: [setup, database]
+
+- name: Enable and start MySQL
+  service:
+    name: mysql
+    state: started
+    enabled: yes
+  tags: [service, database]
+
+- name: Configure MySQL backup
+  template:
+    src: backup-mysql.sh.j2
+    dest: /usr/local/bin/backup-mysql.sh
+    owner: root
+    group: root
+    mode: '0755'
+  tags: [backup, database] 

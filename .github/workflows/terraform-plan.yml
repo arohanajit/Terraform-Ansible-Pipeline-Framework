@@ -1,0 +1,78 @@
+name: Terraform Plan
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'terraform/**'
+
+jobs:
+  terraform-plan:
+    name: Terraform Plan
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        environment: [dev, staging, prod]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.0.0
+
+      - name: Terraform Init
+        working-directory: terraform/${{ matrix.environment }}
+        run: terraform init
+
+      - name: Terraform Plan
+        working-directory: terraform/${{ matrix.environment }}
+        run: terraform plan -no-color -out=tfplan
+        continue-on-error: false
+
+      - name: Store Terraform Plan
+        uses: actions/upload-artifact@v2
+        with:
+          name: tfplan-${{ matrix.environment }}
+          path: terraform/${{ matrix.environment }}/tfplan
+          retention-days: 7
+          
+      - name: Plan Output Verification 
+        working-directory: terraform/${{ matrix.environment }}
+        run: |
+          # Extract plan summary
+          terraform show -no-color tfplan > plan_output.txt
+          
+          # Check for resources to be created/modified/destroyed
+          resources_text=$(grep -E 'Plan:|To add:|To change:|To destroy:' plan_output.txt || echo "Plan: 0 to add, 0 to change, 0 to destroy.")
+          echo "Terraform plan resources: $resources_text"
+          
+          # Save for PR comment
+          echo "$resources_text" > plan_summary.txt
+          
+      - name: PR Comment with Plan Summary
+        uses: actions/github-script@v4
+        if: github.event_name == 'pull_request'
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const planSummary = fs.readFileSync('terraform/${{ matrix.environment }}/plan_summary.txt', 'utf8');
+            const envName = '${{ matrix.environment }}';
+            
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `### Terraform Plan for ${envName} environment\n\n${planSummary}\n\nFor details, check the plan artifact in the Actions tab.`
+            }) 

@@ -1,0 +1,49 @@
+name: Framework Validation Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  validate-framework:
+    name: Validate Framework Structure and Configuration
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Make scripts executable
+        run: chmod +x scripts/*.sh
+      
+      - name: Run Repository Structure Validation
+        run: ./scripts/validate_repo_structure.sh
+      
+      - name: Run CI/CD Connection Test
+        run: ./scripts/test_cicd_connection.sh
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.0.0
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: Install yaml package
+        run: pip install pyyaml
+      
+      - name: Run Configuration Files Validation
+        run: ./scripts/validate_config_files.sh
+      
+      - name: Upload test reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: validation-test-reports
+          path: reports/
+          retention-days: 7 

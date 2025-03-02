@@ -1,0 +1,90 @@
+name: Terraform Apply
+
+on:
+  push:
+    branches:
+      - main  # Apply changes only on merge to main
+    paths:
+      - 'terraform/**'
+
+  # Allow manual triggering
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to apply changes to (dev, staging, prod)'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - staging
+          - prod
+      confirm:
+        description: 'Type "yes" to confirm you want to apply changes'
+        required: true
+        type: string
+
+jobs:
+  terraform-apply:
+    name: Terraform Apply
+    # Only run if on main branch push OR workflow_dispatch with confirmation
+    if: |
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') || 
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.confirm == 'yes')
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        # For push events, apply to all environments
+        # For workflow_dispatch, use the specified environment
+        environment: ${{ github.event_name == 'push' && fromJSON('["dev", "staging", "prod"]') || fromJSON(format('["%s"]', github.event.inputs.environment)) }}
+    
+    # Add approval requirement for production environment
+    environment: ${{ matrix.environment == 'prod' && 'production-approval' || '' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.0.0
+
+      - name: Terraform Init
+        working-directory: terraform/${{ matrix.environment }}
+        run: terraform init
+
+      - name: Terraform Plan
+        working-directory: terraform/${{ matrix.environment }}
+        run: terraform plan -no-color -out=tfplan
+
+      - name: Terraform Apply
+        working-directory: terraform/${{ matrix.environment }}
+        run: terraform apply -auto-approve tfplan
+        
+      - name: Verify Resources
+        working-directory: terraform/${{ matrix.environment }}
+        run: |
+          echo "Verifying created resources..."
+          terraform state list
+          echo "Resources verified."
+          
+      - name: Notify Slack
+        uses: rtCamp/action-slack-notify@v2
+        if: always()
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: terraform-deployments
+          SLACK_TITLE: Terraform Apply - ${{ matrix.environment }}
+          SLACK_MESSAGE: "Terraform Apply for ${{ matrix.environment }} environment ${{ job.status }}"
+          SLACK_COLOR: ${{ job.status == 'success' && 'good' || 'danger' }}
+          SLACK_ICON: https://www.terraform.io/favicon.ico
+          SLACK_USERNAME: Terraform CI 

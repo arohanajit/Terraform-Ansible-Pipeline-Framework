@@ -1,0 +1,13 @@
+# Production Environment Variables
+# Make a copy of this file named 'terraform.tfvars' and customize as needed
+
+aws_region       = "us-east-1"
+project_name     = "terraform-ansible-pipeline"
+
+# Example resource configurations
+instance_type    = "t2.large"
+instance_count   = 3
+vpc_cidr         = "10.2.0.0/16"
+subnet_cidrs     = ["10.2.1.0/24", "10.2.2.0/24", "10.2.3.0/24"]
+enable_monitoring = true
+enable_backup     = true 

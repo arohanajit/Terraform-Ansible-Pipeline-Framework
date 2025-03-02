@@ -1,0 +1,6 @@
+---
+# Handlers for prod appserver
+- name: restart_application
+  service:
+    name: application
+    state: restarted

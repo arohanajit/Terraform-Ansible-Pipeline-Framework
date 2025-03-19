@@ -1,15 +1,15 @@
 ---
-# Database defaults
+# Database Role Default Variables
 
-# MySQL configuration
-db_name: application_db
-db_user: app_user
-db_password: changeme
-db_allowed_host: '%'
-mysql_max_connections: 150
-mysql_port: 3306
-mysql_bind_address: 0.0.0.0
+# Database Configuration
+prod_db_name: "application_db"
+prod_db_user: "app_user"
+prod_db_password: "changeme"
+prod_db_allowed_host: "%"
+prod_mysql_max_connections: 150
+prod_mysql_port: 3306
+prod_mysql_bind_address: "0.0.0.0"
 
-# MySQL backup configuration
-mysql_backup_directory: /var/backups/mysql
-mysql_backup_retention_days: 7 
+# Backup Configuration
+prod_mysql_backup_directory: "/var/backups/mysql"
+prod_mysql_backup_retention_days: 7 

@@ -1,17 +1,15 @@
 ---
-# Appserver defaults
+# Application Server Role Default Variables
 
-# Application directory
-app_dir: /opt/application
+# Application Configuration
+prod_app_dir: "/var/www/app"
+prod_app_user: "app_user"
+prod_app_group: "app_group"
 
-# Application user and group
-app_user: ubuntu
-app_group: ubuntu
+# Environment Configuration
+prod_app_env: "production"
+prod_app_port: 3000
+prod_app_node_env: "production"
 
-# Application environment
-app_env: production
-app_port: 3000
-app_node_env: production
-
-# PM2 configuration
-pm2_instances: 2 
+# Process Management
+prod_pm2_instances: 4 

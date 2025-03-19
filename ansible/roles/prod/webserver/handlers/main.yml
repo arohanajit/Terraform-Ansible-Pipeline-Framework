@@ -1,12 +1,12 @@
 ---
-# Webserver Handlers
+# Webserver Role Handlers
 
-- name: restart nginx
-  service:
+- name: Restart Nginx
+  ansible.builtin.service:
     name: nginx
     state: restarted
 
-- name: reload nginx
-  service:
+- name: Reload Nginx
+  ansible.builtin.service:
     name: nginx
     state: reloaded 

@@ -1,18 +1,18 @@
 ---
-# Monitoring defaults
+# Monitoring Role Default Variables
 
-# Prometheus configuration
-prometheus_global_scrape_interval: 15s
-prometheus_global_evaluation_interval: 15s
-prometheus_alertmanager_timeout: 10s
+# Prometheus Configuration
+prod_prometheus_global_scrape_interval: "15s"
+prod_prometheus_global_evaluation_interval: "15s"
+prod_prometheus_alertmanager_timeout: "10s"
 
-# Grafana configuration
-grafana_admin_user: admin
-grafana_admin_password: admin
-grafana_install_plugins:
-  - grafana-clock-panel
-  - grafana-piechart-panel
+# Grafana Configuration
+prod_grafana_admin_user: "admin"
+prod_grafana_admin_password: "changeme"
+prod_grafana_install_plugins:
+  - "grafana-clock-panel"
+  - "grafana-simple-json-datasource"
 
-# Targets
-prometheus_node_exporter_targets:
-  - targets: []  # Will be populated from Terraform outputs 
+# Node Exporter Configuration
+prod_prometheus_node_exporter_targets:
+  - "localhost:9100" 

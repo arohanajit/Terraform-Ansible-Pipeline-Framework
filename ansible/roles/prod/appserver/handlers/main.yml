@@ -1,6 +1,7 @@
 ---
-# Handlers for prod appserver
-- name: restart_application
-  service:
-    name: application
+# Application Server Role Handlers
+
+- name: Restart Application
+  ansible.builtin.service:
+    name: "{{ prod_app_service_name | default('app') }}"
     state: restarted

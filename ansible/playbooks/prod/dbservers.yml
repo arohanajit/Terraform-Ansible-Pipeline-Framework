@@ -4,4 +4,4 @@
   hosts: dbservers
   become: true
   roles:
-    - database 
+    - ../roles/prod/database 

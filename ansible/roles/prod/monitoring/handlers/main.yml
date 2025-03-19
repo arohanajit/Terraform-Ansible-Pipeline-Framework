@@ -1,12 +1,12 @@
 ---
-# Monitoring Handlers
+# Monitoring Role Handlers
 
-- name: restart prometheus
-  service:
+- name: Restart Prometheus
+  ansible.builtin.service:
     name: prometheus
     state: restarted
 
-- name: restart grafana
-  service:
+- name: Restart Grafana
+  ansible.builtin.service:
     name: grafana-server
     state: restarted 

@@ -1,37 +1,49 @@
 ---
-# Appserver Configuration Tasks
+# Application Server Tasks
 
 - name: Install Node.js and npm
-  apt:
+  ansible.builtin.apt:
     name: 
       - nodejs
       - npm
     state: present
-    update_cache: yes
+    update_cache: true
   tags: [install, appserver]
 
 - name: Create application directory
-  file:
-    path: "{{ app_dir | default('/opt/application') }}"
+  ansible.builtin.file:
+    path: "{{ prod_app_dir }}"
     state: directory
-    owner: "{{ app_user | default('ubuntu') }}"
-    group: "{{ app_group | default('ubuntu') }}"
+    owner: "{{ prod_app_user }}"
+    group: "{{ prod_app_group }}"
     mode: '0755'
   tags: [setup, appserver]
 
-- name: Install PM2 process manager
-  npm:
+- name: Install PM2 globally
+  community.general.npm:
     name: pm2
-    global: yes
+    global: true
+    state: present
   tags: [install, appserver]
 
 - name: Configure application environment
-  template:
+  ansible.builtin.template:
     src: env.j2
-    dest: "{{ app_dir | default('/opt/application') }}/.env"
-    owner: "{{ app_user | default('ubuntu') }}"
-    group: "{{ app_group | default('ubuntu') }}"
+    dest: "{{ prod_app_dir }}/.env"
+    owner: "{{ prod_app_user }}"
+    group: "{{ prod_app_group }}"
     mode: '0600'
+  notify: Restart Application
+  tags: [config, appserver]
+
+- name: Configure PM2 application
+  ansible.builtin.template:
+    src: ecosystem.config.js.j2
+    dest: "{{ prod_app_dir }}/ecosystem.config.js"
+    owner: "{{ prod_app_user }}"
+    group: "{{ prod_app_group }}"
+    mode: '0644'
+  notify: Restart Application
   tags: [config, appserver]
 
 - name: Setup application systemd service

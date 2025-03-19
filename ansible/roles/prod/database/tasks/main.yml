@@ -2,16 +2,16 @@
 # Database Server Configuration Tasks
 
 - name: Install MySQL
-  apt:
+  ansible.builtin.apt:
     name: 
       - mysql-server
       - python3-pymysql
     state: present
-    update_cache: yes
+    update_cache: true
   tags: [install, database]
 
 - name: Configure MySQL
-  template:
+  ansible.builtin.template:
     src: mysql.cnf.j2
     dest: /etc/mysql/mysql.conf.d/mysqld.cnf
     owner: root
@@ -21,13 +21,13 @@
   tags: [config, database]
 
 - name: Create application database
-  mysql_db:
+  community.mysql.mysql_db:
     name: "{{ db_name | default('application_db') }}"
     state: present
   tags: [setup, database]
 
 - name: Create application database user
-  mysql_user:
+  community.mysql.mysql_user:
     name: "{{ db_user | default('app_user') }}"
     password: "{{ db_password | default('changeme') }}"
     priv: "{{ db_name | default('application_db') }}.*:ALL"
@@ -36,14 +36,14 @@
   tags: [setup, database]
 
 - name: Enable and start MySQL
-  service:
+  ansible.builtin.service:
     name: mysql
     state: started
-    enabled: yes
+    enabled: true
   tags: [service, database]
 
 - name: Configure MySQL backup
-  template:
+  ansible.builtin.template:
     src: backup-mysql.sh.j2
     dest: /usr/local/bin/backup-mysql.sh
     owner: root

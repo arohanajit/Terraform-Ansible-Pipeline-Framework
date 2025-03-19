@@ -1,33 +1,33 @@
 ---
-# Webserver Configuration Tasks
+# Webserver Role Tasks
 
 - name: Install Nginx
-  apt:
+  ansible.builtin.apt:
     name: nginx
     state: present
-    update_cache: yes
+    update_cache: true
   tags: [install, webserver]
-      
+
 - name: Configure Nginx
-  template:
+  ansible.builtin.template:
     src: nginx.conf.j2
     dest: /etc/nginx/nginx.conf
     owner: root
     group: root
     mode: '0644'
-  notify: restart nginx
+  notify: Reload Nginx
   tags: [config, webserver]
 
-- name: Enable and start Nginx
-  service:
+- name: Start and enable Nginx
+  ansible.builtin.service:
     name: nginx
     state: started
-    enabled: yes
+    enabled: true
   tags: [service, webserver]
 
 - name: Create web content directory
-  file:
-    path: "{{ web_content_dir | default('/var/www/html') }}"
+  ansible.builtin.file:
+    path: "{{ prod_web_content_dir }}"
     state: directory
     owner: www-data
     group: www-data

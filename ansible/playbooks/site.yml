@@ -9,7 +9,7 @@
         name: nginx
         state: present
         update_cache: true
-     
+    
     - name: Start Nginx Service
       ansible.builtin.service:
         name: nginx
@@ -27,7 +27,7 @@
           - npm
         state: present
         update_cache: true
-     
+    
     - name: Create app directory
       ansible.builtin.file:
         path: /opt/app
@@ -45,7 +45,7 @@
           - python3-pymysql
         state: present
         update_cache: true
-     
+    
     - name: Start MySQL Service
       ansible.builtin.service:
         name: mysql

@@ -6,7 +6,7 @@
     name: nginx
     state: present
     update_cache: true
- 
+
 - name: Start Nginx Service
   ansible.builtin.service:
     name: nginx

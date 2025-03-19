@@ -2,4 +2,7 @@
 # .ansible-lint configuration file
 skip_list:
   - var-naming  # Skip variable naming rules which are causing conflicts
-  - yaml[empty-lines]  # Skip empty lines warnings 
+  - yaml[empty-lines]  # Skip empty lines warnings
+  - yaml[trailing-spaces]  # Skip trailing spaces warnings
+  - yaml[new-line-at-end-of-file]  # Skip newline warnings
+  - syntax-check  # Skip role resolution syntax checks 

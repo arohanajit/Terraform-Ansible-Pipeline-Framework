@@ -1,0 +1,24 @@
+---
+# This file defines role locations for linting tools
+roles:
+  # Production roles
+  - name: webserver
+    path: ./roles/prod/webserver
+  - name: appserver
+    path: ./roles/prod/appserver
+  - name: database
+    path: ./roles/prod/database
+  - name: monitoring
+    path: ./roles/prod/monitoring
+  - name: common
+    path: ./roles/common
+
+  # Staging roles
+  - name: staging/webserver
+    path: ./roles/staging/webserver
+
+  # Dev roles
+  - name: dev/appserver
+    path: ./roles/dev/appserver
+  - name: dev/webserver
+    path: ./roles/dev/webserver 

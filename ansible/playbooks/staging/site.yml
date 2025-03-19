@@ -30,4 +30,4 @@
   vars:
     environment: staging
   roles:
-    - { role: staging/monitoring, tags: [monitoring] } 
+    - { role: staging/monitoring, tags: [monitoring] }

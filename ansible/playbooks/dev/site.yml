@@ -30,4 +30,4 @@
   vars:
     environment: dev
   roles:
-    - { role: dev/monitoring, tags: [monitoring] } 
+    - { role: dev/monitoring, tags: [monitoring] }

@@ -22,16 +22,16 @@
 
 - name: Create application database
   community.mysql.mysql_db:
-    name: "{{ database_db_name | default('application_db') }}"
+    name: "{{ prod_db_name | default('application_db') }}"
     state: present
   tags: [setup, database]
 
 - name: Create application database user
   community.mysql.mysql_user:
-    name: "{{ database_db_user | default('app_user') }}"
-    password: "{{ database_db_password | default('changeme') }}"
-    priv: "{{ database_db_name | default('application_db') }}.*:ALL"
-    host: "{{ database_db_allowed_host | default('%') }}"
+    name: "{{ prod_db_user | default('app_user') }}"
+    password: "{{ prod_db_password | default('changeme') }}"
+    priv: "{{ prod_db_name | default('application_db') }}.*:ALL"
+    host: "{{ prod_db_allowed_host | default('%') }}"
     state: present
   tags: [setup, database]
 
@@ -50,3 +50,4 @@
     group: root
     mode: '0755'
   tags: [backup, database]
+

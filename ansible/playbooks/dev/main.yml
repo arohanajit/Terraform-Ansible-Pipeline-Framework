@@ -20,4 +20,4 @@
   become: true
   roles:
     - common
-    - monitoring 
+    - monitoring

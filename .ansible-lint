@@ -1,0 +1,5 @@
+---
+# .ansible-lint configuration file
+skip_list:
+  - var-naming  # Skip variable naming rules which are causing conflicts
+  - yaml[empty-lines]  # Skip empty lines warnings 

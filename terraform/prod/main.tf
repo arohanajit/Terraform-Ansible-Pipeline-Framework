@@ -3,6 +3,8 @@
 terraform {
   required_version = ">= 0.14.0"
 
+  # Comment out the S3 backend for local validation
+  /*
   backend "s3" {
     bucket         = "terraform-ansible-pipeline-state"
     key            = "prod/terraform.tfstate"
@@ -10,6 +12,7 @@ terraform {
     encrypt        = true
     dynamodb_table = "terraform-state-lock"
   }
+  */
 
   required_providers {
     aws = {

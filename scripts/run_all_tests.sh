@@ -16,6 +16,7 @@ NC='\033[0m' # No Color
 
 # Base directory (repository root)
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+TESTS_DIR="$REPO_ROOT/scripts/tests"
 cd "$REPO_ROOT"
 
 # Default timeout values (in seconds)
@@ -189,28 +190,34 @@ run_ansible_syntax_test() {
     fi
 }
 
-# Phase 1: Basic Repository Tests
-echo -e "\n${BOLD}${BLUE}Running Phase 1: Basic Repository Tests${NC}"
-run_test "Repository Structure Validation" "$REPO_ROOT/scripts/validate_repo_structure.sh" --timeout=60 || exit 1
-run_test "Repository Validation" "$REPO_ROOT/scripts/validate_repo.sh" --timeout=60 || exit 1
-run_test "CI/CD Connection Test" "$REPO_ROOT/scripts/test_cicd_connection.sh" --timeout=120 || exit 1
-run_test "Configuration Files Validation" "$REPO_ROOT/scripts/validate_config_files.sh" --timeout=60 || exit 1
-run_test "Configuration Parsing Test" "$REPO_ROOT/scripts/validate_configs.sh" --timeout=120 || exit 1
+# Run all tests
+echo -e "\n=================================================================="
+echo -e "${BOLD}Running Main Test Suite${NC}"
+echo "=================================================================="
 
-# Phase 2: Terraform Tests
-echo -e "\n${BOLD}${BLUE}Running Phase 2: Terraform Tests${NC}"
-run_test "Terraform Validation Test" "$REPO_ROOT/scripts/test_terraform_validation.sh" --timeout=180 || exit 1
-run_test "Terraform Plan Verification Test (Dev)" "$REPO_ROOT/scripts/test_terraform_plan.sh" "dev" --timeout=300 || exit 1
-run_test "Terraform State Isolation Test" "$REPO_ROOT/scripts/test_terraform_state_isolation.sh" --timeout=240 || exit 1
+# Repository structure validation
+run_test "Repository Structure Validation" "$REPO_ROOT/scripts/validate_repo.sh" || exit 1
 
-# Phase 3: Ansible Tests
-echo -e "\n${BOLD}${BLUE}Running Phase 3: Ansible Tests${NC}"
-run_test "Ansible Lint Test" "$REPO_ROOT/scripts/test_ansible_lint.sh" --timeout=120 || exit 1
-run_ansible_syntax_test "prod" || exit 1
-run_ansible_syntax_test "dev" || exit 1
-run_ansible_syntax_test "staging" || exit 1
-run_test "Ansible Roles Validation" "$REPO_ROOT/scripts/test_ansible_roles.sh" --timeout=120 || exit 1
-run_test "Ansible-Terraform Integration Test" "$REPO_ROOT/scripts/test_terraform_ansible_integration.sh" --timeout=360 || exit 1
+# Configuration validation tests
+run_test "Configuration Files Validation" "$REPO_ROOT/scripts/validate_configs.sh" || exit 1
+
+# CI/CD connection tests
+run_test "CI/CD Connection Test" "$TESTS_DIR/test_cicd_connection.sh" --timeout=120 || exit 1
+
+# Terraform-specific tests
+echo -e "\n${BLUE}Running Terraform Tests...${NC}"
+run_test "Terraform Validation Test" "$TESTS_DIR/test_terraform_validation.sh" --timeout=180 || exit 1
+run_test "Terraform Plan Verification Test (Dev)" "$TESTS_DIR/test_terraform_plan.sh" "dev" --timeout=300 || exit 1
+run_test "Terraform State Isolation Test" "$TESTS_DIR/test_terraform_state_isolation.sh" --timeout=240 || exit 1
+
+# Ansible-specific tests
+echo -e "\n${BLUE}Running Ansible Tests...${NC}"
+run_test "Ansible Lint Test" "$TESTS_DIR/test_ansible_lint.sh" --timeout=120 || exit 1
+
+# Run syntax check for each environment
+run_ansible_syntax_test "dev"
+run_test "Ansible Roles Validation" "$TESTS_DIR/test_ansible_roles.sh" --timeout=120 || exit 1
+run_test "Ansible-Terraform Integration Test" "$TESTS_DIR/test_terraform_ansible_integration.sh" --timeout=360 || exit 1
 
 # Print summary
 echo -e "\n=================================================================="

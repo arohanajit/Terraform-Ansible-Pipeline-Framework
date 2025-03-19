@@ -1,7 +1,0 @@
----
-# Webserver Role Defaults for Dev Environment
-
-nginx_worker_processes: 2
-nginx_worker_connections: 512
-nginx_keepalive_timeout: 65
-nginx_client_max_body_size: "1m" 

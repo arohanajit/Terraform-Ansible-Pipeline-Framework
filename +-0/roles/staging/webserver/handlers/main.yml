@@ -1,7 +1,0 @@
----
-# Webserver Role Handlers for Staging Environment
-
-- name: restart nginx
-  service:
-    name: nginx
-    state: restarted 

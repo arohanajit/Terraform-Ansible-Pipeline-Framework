@@ -1,7 +1,0 @@
----
-# Webserver Configuration Playbook
-- name: Configure Web Servers
-  hosts: webservers
-  become: true
-  roles:
-    - { role: prod/webserver, tags: [webserver] } 

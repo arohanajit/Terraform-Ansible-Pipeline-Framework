@@ -1,7 +1,0 @@
----
-# Webserver Role Handlers for Dev Environment
-
-- name: restart nginx
-  service:
-    name: nginx
-    state: restarted 

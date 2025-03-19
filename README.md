@@ -7,25 +7,25 @@ A comprehensive infrastructure-as-code framework combining Terraform for provisi
 - `/terraform`: Contains all Terraform code for infrastructure provisioning
   - Organized by environments (dev, staging, prod)
   - Modular structure for reusable components
+  - State configuration for remote state management
 
 - `/ansible`: Contains Ansible playbooks and roles for configuration management
-  - Playbooks organized by purpose
+  - Playbooks organized by environments
   - Roles for different system configurations
+  - Inventory management for different environments
 
 - `/scripts`: Utility scripts for automation and management
   - Deployment helpers
-  - Environment setup scripts
-  - Maintenance utilities
+  - `/scripts/tests`: Organized testing framework
+  - Validation utilities
 
-- `/ci`: CI/CD configuration files
-  - Pipeline definitions
-  - Build configurations
-  - Testing frameworks
+- `/.github`: CI/CD configuration files
+  - GitHub Actions workflow definitions
+  - Automated testing configurations
 
 - `/docs`: Documentation files
   - Testing strategy
-  - Architecture diagrams
-  - User guides
+  - Ansible integration guides
 
 ## Environment Configuration
 
@@ -53,21 +53,22 @@ The CI/CD pipeline is configured to:
 
 ## Testing Framework
 
-The framework includes several validation tests to ensure code quality and correctness:
+The testing framework has been simplified and organized in the `/scripts/tests` directory:
 
 1. **Repository Structure Validation**: Verifies that all required directories and files exist
    ```bash
    ./scripts/validate_repo.sh
    ```
 
-2. **Configuration Parsing Test**: Ensures all configuration files are correctly formatted
+2. **Configuration Validation**: Ensures all configuration files are correctly formatted
    ```bash
    ./scripts/validate_configs.sh
    ```
 
-3. **CI/CD Connection Test**: Confirms that the CI/CD pipeline can successfully connect
-   - Automatically runs on push to main/develop branches
-   - Can be manually triggered in GitHub Actions
+3. **Infrastructure Tests**: Test Terraform configuration and state management
+   ```bash
+   ./scripts/run_all_tests.sh
+   ```
 
 For more details on testing, see [Testing Documentation](docs/testing.md).
 

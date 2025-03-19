@@ -7,8 +7,17 @@ This document outlines the testing strategy for the Terraform-Ansible Pipeline F
 The testing framework aims to ensure:
 
 1. **Repository Structure Integrity**: Verify that all required directories and files exist
-2. **CI/CD Connection**: Confirm that the CI/CD pipeline can successfully connect and execute commands
-3. **Configuration Validation**: Ensure all configuration files are correctly formatted and syntactically valid
+2. **Configuration Validation**: Ensure all configuration files are correctly formatted and syntactically valid
+3. **Infrastructure Verification**: Test Terraform plan and state management
+4. **Ansible Configuration**: Validate Ansible playbooks and roles
+
+## Test Organization
+
+All tests are now organized in a consistent structure:
+
+- **Repository validation tests**: Located in the project root's `scripts/` directory
+- **Infrastructure and configuration tests**: Located in the `scripts/tests/` directory
+- **Running all tests**: Simplified with the main test runner script
 
 ## Available Tests
 
@@ -27,31 +36,7 @@ This test verifies that the required directory structure and key files exist in 
 ./scripts/validate_repo.sh
 ```
 
-**Expected output**:
-- Success: "Repository validation passed! All required directories and files exist."
-- Failure: "Repository validation failed! X issues found." (with details about missing items)
-
-### 2. CI/CD Connection Test
-
-This test verifies that the CI/CD pipeline can successfully connect to the repository and execute basic commands.
-
-**Workflow**: `.github/workflows/ci-connection-test.yml`
-
-**What it checks**:
-- Ability to check out the code
-- Ability to run the repository validation script
-- Access to environment variables
-- Ability to execute system commands
-
-**How to run**:
-- Automatically triggered on push to main/develop branches
-- Manually triggered via GitHub Actions UI
-
-**Expected output**:
-- Success: All steps complete without errors
-- Failure: One or more steps fail with specific error messages
-
-### 3. Configuration Parsing Test
+### 2. Configuration Validation
 
 This test verifies that all configuration files are correctly formatted and syntactically valid.
 
@@ -67,28 +52,49 @@ This test verifies that all configuration files are correctly formatted and synt
 ./scripts/validate_configs.sh
 ```
 
-**Expected output**:
-- Success: "Configuration parsing test passed! All configuration files are correctly formatted."
-- Failure: "Configuration parsing test failed!" (with details about errors)
+### 3. Terraform Tests
 
-### 4. Comprehensive Validation Tests
+These tests verify Terraform configuration, plan generation, and state management.
 
-A GitHub Actions workflow that runs all the above tests in sequence.
+**Scripts**: Located in `scripts/tests/` directory
+- `test_terraform_validation.sh`: Validates Terraform syntax
+- `test_terraform_plan.sh`: Validates Terraform plan generation
+- `test_terraform_state_isolation.sh`: Tests state isolation between environments
 
-**Workflow**: `.github/workflows/validation-tests.yml`
+**How to run individual tests**:
+```bash
+./scripts/tests/test_terraform_validation.sh
+```
 
-**What it checks**:
-- Repository structure
-- Terraform configuration for all environments
-- Ansible configuration
+### 4. Ansible Tests
+
+These tests verify Ansible playbooks, roles, and integration with Terraform.
+
+**Scripts**: Located in `scripts/tests/` directory
+- `test_ansible_lint.sh`: Lints Ansible files
+- `test_ansible_roles.sh`: Validates Ansible roles
+- `test_terraform_ansible_integration.sh`: Tests Terraform and Ansible integration
+
+**How to run individual tests**:
+```bash
+./scripts/tests/test_ansible_lint.sh
+```
+
+## Running All Tests
+
+For convenience, a main test runner script is provided that runs all validation tests in sequence.
+
+**Script**: `scripts/run_all_tests.sh`
+
+**What it does**:
+- Automatically runs all test scripts in sequence
+- Reports which tests passed and which failed
+- Generates a comprehensive test report in the `reports` directory
 
 **How to run**:
-- Automatically triggered on push to main/develop branches
-- Manually triggered via GitHub Actions UI
-
-**Expected output**:
-- Success: All jobs complete without errors
-- Failure: One or more jobs fail with specific error messages
+```bash
+./scripts/run_all_tests.sh
+```
 
 ## Interpreting Test Results
 
@@ -97,7 +103,8 @@ A GitHub Actions workflow that runs all the above tests in sequence.
 All tests should pass with no errors. This indicates that:
 - The repository structure is correct
 - All configuration files are syntactically valid
-- The CI/CD pipeline can successfully connect and execute commands
+- Terraform plans can be generated correctly
+- Ansible playbooks and roles are valid
 
 ### Common Failures and Remediation
 
@@ -116,43 +123,10 @@ All tests should pass with no errors. This indicates that:
    - Check the identified YAML files for syntax errors
    - Use a YAML validator to identify and fix issues
 
-## Adding New Tests
-
-To add new tests to the framework:
-
-1. Create a new test script in the `scripts` directory
-2. Update the GitHub Actions workflows to include the new test
-3. Document the new test in this file
-
 ## Continuous Integration
 
 All tests are automatically run as part of the CI/CD pipeline on:
-- Every push to the main and develop branches
-- Every pull request to these branches
+- Every push to the main branch
+- Every pull request
 
-This ensures that any changes to the codebase are validated before they are merged.
-
-## Running All Tests
-
-For convenience, a main test runner script is provided that runs all validation tests in sequence.
-
-**Script**: `scripts/run_all_tests.sh`
-
-**What it does**:
-- Automatically runs all available test scripts in sequence
-- Reports which tests passed and which failed
-- Continues running all tests even if some fail
-- Generates a comprehensive test report in the `reports` directory
-
-**How to run**:
-```bash
-./scripts/run_all_tests.sh
-```
-
-**Expected output**:
-- A colored summary of all tests that were run
-- The number of tests that passed and failed
-- A list of any failed tests
-- The location of the test report file
-
-This is the recommended way to run all tests locally before pushing changes to the repository. 
+This ensures that any changes to the codebase are validated before they are merged. 

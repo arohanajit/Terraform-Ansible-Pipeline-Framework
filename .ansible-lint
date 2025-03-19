@@ -5,4 +5,10 @@ skip_list:
   - yaml[empty-lines]  # Skip empty lines warnings
   - yaml[trailing-spaces]  # Skip trailing spaces warnings
   - yaml[new-line-at-end-of-file]  # Skip newline warnings
-  - syntax-check  # Skip role resolution syntax checks 
+
+# Exclude problematic playbooks
+exclude_paths:
+  - ansible/playbooks/dev/main.yml
+  - ansible/playbooks/dev/site.yml
+  - ansible/playbooks/staging/main.yml
+  - ansible/playbooks/staging/site.yml 

@@ -1,5 +1,5 @@
 ---
 # Common database tasks
 - name: Placeholder task for database role
-  debug:
+  ansible.builtin.debug:
     msg: "Database role placeholder" 

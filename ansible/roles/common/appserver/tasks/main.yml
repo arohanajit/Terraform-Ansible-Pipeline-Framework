@@ -1,5 +1,5 @@
 ---
 # Common appserver tasks
 - name: Placeholder task for appserver role
-  debug:
+  ansible.builtin.debug:
     msg: "Appserver role placeholder" 

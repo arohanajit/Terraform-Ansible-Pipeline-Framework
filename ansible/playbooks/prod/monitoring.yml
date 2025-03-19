@@ -4,4 +4,4 @@
   hosts: monitoring
   become: true
   roles:
-    - monitoring 
+    - monitoring

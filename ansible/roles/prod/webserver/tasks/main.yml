@@ -32,4 +32,4 @@
     owner: www-data
     group: www-data
     mode: '0755'
-  tags: [setup, webserver] 
+  tags: [setup, webserver]

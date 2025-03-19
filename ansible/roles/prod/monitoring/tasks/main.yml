@@ -71,4 +71,4 @@
     name: grafana-server
     state: started
     enabled: true
-  tags: [service, monitoring] 
+  tags: [service, monitoring]

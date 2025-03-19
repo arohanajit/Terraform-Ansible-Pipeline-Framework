@@ -42,7 +42,7 @@ jobs:
         run: ./scripts/validate_config_files.sh
       
       - name: Upload test reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: validation-test-reports
           path: reports/

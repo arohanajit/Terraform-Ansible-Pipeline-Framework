@@ -1,7 +1,7 @@
 ---
 # Webserver Role Handlers for Dev Environment
 
-- name: restart nginx
-  service:
+- name: Restart Nginx
+  ansible.builtin.service:
     name: nginx
     state: restarted 

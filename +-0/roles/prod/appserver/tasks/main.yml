@@ -1,0 +1,45 @@
+---
+# Appserver Configuration Tasks
+
+- name: Install Node.js and npm
+  apt:
+    name: 
+      - nodejs
+      - npm
+    state: present
+    update_cache: yes
+  tags: [install, appserver]
+
+- name: Create application directory
+  file:
+    path: "{{ app_dir | default('/opt/application') }}"
+    state: directory
+    owner: "{{ app_user | default('ubuntu') }}"
+    group: "{{ app_group | default('ubuntu') }}"
+    mode: '0755'
+  tags: [setup, appserver]
+
+- name: Install PM2 process manager
+  npm:
+    name: pm2
+    global: yes
+  tags: [install, appserver]
+
+- name: Configure application environment
+  template:
+    src: env.j2
+    dest: "{{ app_dir | default('/opt/application') }}/.env"
+    owner: "{{ app_user | default('ubuntu') }}"
+    group: "{{ app_group | default('ubuntu') }}"
+    mode: '0600'
+  tags: [config, appserver]
+
+- name: Setup application systemd service
+  template:
+    src: app.service.j2
+    dest: /etc/systemd/system/app.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify: reload systemd
+  tags: [service, appserver] 

@@ -62,4 +62,81 @@ module "security_groups" {
 
   environment = "prod"
   vpc_id      = module.vpc.vpc_id
+}
+
+module "webservers" {
+  source = "../modules/webservers"
+
+  environment    = "prod"
+  vpc_id         = module.vpc.vpc_id
+  subnet_ids     = module.vpc.private_subnet_ids
+  security_group = module.security_groups.web_security_group_id
+}
+
+module "appservers" {
+  source = "../modules/appservers"
+
+  environment    = "prod"
+  vpc_id         = module.vpc.vpc_id
+  subnet_ids     = module.vpc.private_subnet_ids
+  security_group = module.security_groups.app_security_group_id
+}
+
+module "dbservers" {
+  source = "../modules/dbservers"
+
+  environment    = "prod"
+  vpc_id         = module.vpc.vpc_id
+  subnet_ids     = module.vpc.private_subnet_ids
+  security_group = module.security_groups.db_security_group_id
+}
+
+module "database_primary" {
+  source = "../modules/database"
+
+  environment    = "prod"
+  vpc_id         = module.vpc.vpc_id
+  subnet_id      = module.vpc.private_subnet_ids[0]
+  security_group = module.security_groups.db_security_group_id
+  is_primary     = true
+}
+
+module "database_replicas" {
+  source = "../modules/database"
+
+  environment    = "prod"
+  vpc_id         = module.vpc.vpc_id
+  subnet_id      = module.vpc.private_subnet_ids[1]
+  security_group = module.security_groups.db_security_group_id
+  is_primary     = false
+}
+
+module "monitoring" {
+  source = "../modules/monitoring"
+
+  environment    = "prod"
+  vpc_id         = module.vpc.vpc_id
+  subnet_ids     = module.vpc.private_subnet_ids
+  security_group = module.security_groups.web_security_group_id
+}
+
+module "load_balancer" {
+  source = "../modules/load_balancer"
+
+  environment    = "prod"
+  vpc_id         = module.vpc.vpc_id
+  subnet_ids     = module.vpc.public_subnet_ids
+  security_group = module.security_groups.web_security_group_id
+  target_groups = {
+    web = {
+      port     = 80
+      protocol = "HTTP"
+      targets  = module.webservers.instance_ids
+    }
+    app = {
+      port     = 8080
+      protocol = "HTTP"
+      targets  = module.appservers.instance_ids
+    }
+  }
 } 

@@ -4,4 +4,4 @@
   hosts: webservers
   become: true
   roles:
-    - { role: prod/webserver, tags: [webserver] } 
+    - webserver 

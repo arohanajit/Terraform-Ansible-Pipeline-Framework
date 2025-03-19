@@ -1,0 +1,17 @@
+---
+# Appserver defaults
+
+# Application directory
+app_dir: /opt/application
+
+# Application user and group
+app_user: ubuntu
+app_group: ubuntu
+
+# Application environment
+app_env: production
+app_port: 3000
+app_node_env: production
+
+# PM2 configuration
+pm2_instances: 2 

@@ -1,7 +1,7 @@
 ---
 # Appserver Configuration Playbook
-- name: Configure Application Servers
+- name: Configure App Servers
   hosts: appservers
   become: true
   roles:
-    - { role: prod/appserver, tags: [appserver] } 
+    - appserver 

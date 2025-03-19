@@ -4,4 +4,4 @@
   hosts: dbservers
   become: true
   roles:
-    - { role: prod/database, tags: [database] } 
+    - database 

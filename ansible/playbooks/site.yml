@@ -5,31 +5,31 @@
   become: true
   tasks:
     - name: Install Nginx
-      apt:
+      ansible.builtin.apt:
         name: nginx
         state: present
-        update_cache: yes
+        update_cache: true
       
     - name: Start Nginx Service
-      service:
+      ansible.builtin.service:
         name: nginx
         state: started
-        enabled: yes
+        enabled: true
 
 - name: Configure App Servers
   hosts: appservers
   become: true
   tasks:
     - name: Install required packages
-      apt:
+      ansible.builtin.apt:
         name: 
           - nodejs
           - npm
         state: present
-        update_cache: yes
+        update_cache: true
       
     - name: Create app directory
-      file:
+      ansible.builtin.file:
         path: /opt/app
         state: directory
         mode: '0755'
@@ -39,15 +39,15 @@
   become: true
   tasks:
     - name: Install MySQL
-      apt:
+      ansible.builtin.apt:
         name: 
           - mysql-server
           - python3-pymysql
         state: present
-        update_cache: yes
+        update_cache: true
       
     - name: Start MySQL Service
-      service:
+      ansible.builtin.service:
         name: mysql
         state: started
-        enabled: yes 
+        enabled: true 

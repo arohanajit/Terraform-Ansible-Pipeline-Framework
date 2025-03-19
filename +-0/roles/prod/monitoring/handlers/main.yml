@@ -1,0 +1,12 @@
+---
+# Monitoring Handlers
+
+- name: restart prometheus
+  service:
+    name: prometheus
+    state: restarted
+
+- name: restart grafana
+  service:
+    name: grafana-server
+    state: restarted 

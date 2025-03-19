@@ -1,0 +1,7 @@
+---
+# Monitoring Server Configuration Playbook
+- name: Configure Monitoring Servers
+  hosts: monitoring
+  become: true
+  roles:
+    - { role: prod/monitoring, tags: [monitoring] } 

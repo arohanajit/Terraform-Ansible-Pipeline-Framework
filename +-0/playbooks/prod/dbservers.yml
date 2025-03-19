@@ -1,0 +1,7 @@
+---
+# Database Configuration Playbook
+- name: Configure Database Servers
+  hosts: dbservers
+  become: true
+  roles:
+    - { role: prod/database, tags: [database] } 

@@ -1,0 +1,23 @@
+---
+# Development Environment Main Playbook
+
+- name: Configure Webservers
+  hosts: webservers
+  become: true
+  roles:
+    - common
+    - webserver
+
+- name: Configure Databases
+  hosts: databases
+  become: true
+  roles:
+    - common
+    - database
+
+- name: Configure Monitoring
+  hosts: monitoring
+  become: true
+  roles:
+    - common
+    - monitoring 

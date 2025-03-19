@@ -41,7 +41,7 @@ output "database_primary_ip" {
 
 output "database_replica_ips" {
   description = "Public IP addresses of database replicas"
-  value       = module.database_replicas.instance_public_ips
+  value       = module.database_replicas.instance_public_ip
 }
 
 # Monitoring Server Outputs

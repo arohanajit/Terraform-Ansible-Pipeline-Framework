@@ -24,6 +24,17 @@ TERRAFORM_TIMEOUT=300  # 5 minutes
 ANSIBLE_TIMEOUT=180    # 3 minutes
 VALIDATION_TIMEOUT=60  # 1 minute
 
+# Check if timeout command is available
+if command -v timeout &> /dev/null; then
+    TIMEOUT_CMD="timeout"
+elif command -v gtimeout &> /dev/null; then
+    # On macOS, timeout might be available as gtimeout via coreutils
+    TIMEOUT_CMD="gtimeout"
+else
+    echo -e "${YELLOW}⚠️ Warning: 'timeout' command not found. Tests will run without timeouts.${NC}"
+    TIMEOUT_CMD=""
+fi
+
 # Activate virtual environment if it exists
 if [ -f "$REPO_ROOT/venv/bin/activate" ]; then
     echo -e "${BLUE}Activating Python virtual environment...${NC}"
@@ -42,6 +53,7 @@ echo "=================================================================="
 echo -e "${BOLD}Terraform-Ansible Pipeline Framework Test Suite${NC}"
 echo "=================================================================="
 echo "Started at: $(date)"
+echo -e "${YELLOW}⚠️ Note: Tests will run sequentially and the script will exit on the first failure${NC}"
 echo "=================================================================="
 
 # Function to run a test script and track its status
@@ -85,24 +97,43 @@ run_test() {
     # Run the test with timeout and capture its exit code
     local start_time=$(date +%s)
     
-    if timeout -k 10 "${timeout}" "$script_path" "${args[@]}"; then
-        local end_time=$(date +%s)
-        local duration=$((end_time - start_time))
-        echo -e "\n${GREEN}✅ Test Passed: $test_name (completed in ${duration}s)${NC}"
-        TESTS_PASSED=$((TESTS_PASSED + 1))
-        return 0
-    elif [[ $? -eq 124 ]]; then
-        echo -e "\n${RED}❌ Test Failed: $test_name (TIMEOUT after ${timeout}s)${NC}"
-        TESTS_FAILED=$((TESTS_FAILED + 1))
-        FAILED_TESTS+=("$test_name (TIMEOUT)")
-        return 1
+    if [ -n "$TIMEOUT_CMD" ]; then
+        # Run with timeout if available
+        if $TIMEOUT_CMD -k 10 "${timeout}" "$script_path" "${args[@]}"; then
+            local end_time=$(date +%s)
+            local duration=$((end_time - start_time))
+            echo -e "\n${GREEN}✅ Test Passed: $test_name (completed in ${duration}s)${NC}"
+            TESTS_PASSED=$((TESTS_PASSED + 1))
+            return 0
+        elif [[ $? -eq 124 ]]; then
+            echo -e "\n${RED}❌ Test Failed: $test_name (TIMEOUT after ${timeout}s)${NC}"
+            TESTS_FAILED=$((TESTS_FAILED + 1))
+            FAILED_TESTS+=("$test_name (TIMEOUT)")
+            return 1
+        else
+            local end_time=$(date +%s)
+            local duration=$((end_time - start_time))
+            echo -e "\n${RED}❌ Test Failed: $test_name (completed in ${duration}s)${NC}"
+            TESTS_FAILED=$((TESTS_FAILED + 1))
+            FAILED_TESTS+=("$test_name")
+            return 1
+        fi
     else
-        local end_time=$(date +%s)
-        local duration=$((end_time - start_time))
-        echo -e "\n${RED}❌ Test Failed: $test_name (completed in ${duration}s)${NC}"
-        TESTS_FAILED=$((TESTS_FAILED + 1))
-        FAILED_TESTS+=("$test_name")
-        return 1
+        # Run without timeout
+        if "$script_path" "${args[@]}"; then
+            local end_time=$(date +%s)
+            local duration=$((end_time - start_time))
+            echo -e "\n${GREEN}✅ Test Passed: $test_name (completed in ${duration}s)${NC}"
+            TESTS_PASSED=$((TESTS_PASSED + 1))
+            return 0
+        else
+            local end_time=$(date +%s)
+            local duration=$((end_time - start_time))
+            echo -e "\n${RED}❌ Test Failed: $test_name (completed in ${duration}s)${NC}"
+            TESTS_FAILED=$((TESTS_FAILED + 1))
+            FAILED_TESTS+=("$test_name")
+            return 1
+        fi
     fi
 }
 
@@ -118,49 +149,68 @@ run_ansible_syntax_test() {
     
     local start_time=$(date +%s)
     
-    if timeout -k 10 "${timeout}" ansible-playbook --syntax-check "$playbook"; then
-        local end_time=$(date +%s)
-        local duration=$((end_time - start_time))
-        echo -e "\n${GREEN}✅ Test Passed: Ansible Syntax Check ($env) (completed in ${duration}s)${NC}"
-        TESTS_PASSED=$((TESTS_PASSED + 1))
-        return 0
-    elif [[ $? -eq 124 ]]; then
-        echo -e "\n${RED}❌ Test Failed: Ansible Syntax Check ($env) (TIMEOUT after ${timeout}s)${NC}"
-        TESTS_FAILED=$((TESTS_FAILED + 1))
-        FAILED_TESTS+=("Ansible Syntax Check ($env) (TIMEOUT)")
-        return 1
+    if [ -n "$TIMEOUT_CMD" ]; then
+        # Run with timeout if available
+        if $TIMEOUT_CMD -k 10 "${timeout}" ansible-playbook --syntax-check "$playbook"; then
+            local end_time=$(date +%s)
+            local duration=$((end_time - start_time))
+            echo -e "\n${GREEN}✅ Test Passed: Ansible Syntax Check ($env) (completed in ${duration}s)${NC}"
+            TESTS_PASSED=$((TESTS_PASSED + 1))
+            return 0
+        elif [[ $? -eq 124 ]]; then
+            echo -e "\n${RED}❌ Test Failed: Ansible Syntax Check ($env) (TIMEOUT after ${timeout}s)${NC}"
+            TESTS_FAILED=$((TESTS_FAILED + 1))
+            FAILED_TESTS+=("Ansible Syntax Check ($env) (TIMEOUT)")
+            return 1
+        else
+            local end_time=$(date +%s)
+            local duration=$((end_time - start_time))
+            echo -e "\n${RED}❌ Test Failed: Ansible Syntax Check ($env) (completed in ${duration}s)${NC}"
+            TESTS_FAILED=$((TESTS_FAILED + 1))
+            FAILED_TESTS+=("Ansible Syntax Check ($env)")
+            return 1
+        fi
     else
-        local end_time=$(date +%s)
-        local duration=$((end_time - start_time))
-        echo -e "\n${RED}❌ Test Failed: Ansible Syntax Check ($env) (completed in ${duration}s)${NC}"
-        TESTS_FAILED=$((TESTS_FAILED + 1))
-        FAILED_TESTS+=("Ansible Syntax Check ($env)")
-        return 1
+        # Run without timeout
+        if ansible-playbook --syntax-check "$playbook"; then
+            local end_time=$(date +%s)
+            local duration=$((end_time - start_time))
+            echo -e "\n${GREEN}✅ Test Passed: Ansible Syntax Check ($env) (completed in ${duration}s)${NC}"
+            TESTS_PASSED=$((TESTS_PASSED + 1))
+            return 0
+        else
+            local end_time=$(date +%s)
+            local duration=$((end_time - start_time))
+            echo -e "\n${RED}❌ Test Failed: Ansible Syntax Check ($env) (completed in ${duration}s)${NC}"
+            TESTS_FAILED=$((TESTS_FAILED + 1))
+            FAILED_TESTS+=("Ansible Syntax Check ($env)")
+            return 1
+        fi
     fi
 }
 
 # Phase 1: Basic Repository Tests
 echo -e "\n${BOLD}${BLUE}Running Phase 1: Basic Repository Tests${NC}"
-run_test "Repository Structure Validation" "$REPO_ROOT/scripts/validate_repo_structure.sh" --timeout=60 || true
-run_test "Repository Validation" "$REPO_ROOT/scripts/validate_repo.sh" --timeout=60 || true
-run_test "CI/CD Connection Test" "$REPO_ROOT/scripts/test_cicd_connection.sh" --timeout=120 || true
-run_test "Configuration Files Validation" "$REPO_ROOT/scripts/validate_config_files.sh" --timeout=60 || true
-run_test "Configuration Parsing Test" "$REPO_ROOT/scripts/validate_configs.sh" --timeout=120 || true
+run_test "Repository Structure Validation" "$REPO_ROOT/scripts/validate_repo_structure.sh" --timeout=60 || exit 1
+run_test "Repository Validation" "$REPO_ROOT/scripts/validate_repo.sh" --timeout=60 || exit 1
+run_test "CI/CD Connection Test" "$REPO_ROOT/scripts/test_cicd_connection.sh" --timeout=120 || exit 1
+run_test "Configuration Files Validation" "$REPO_ROOT/scripts/validate_config_files.sh" --timeout=60 || exit 1
+run_test "Configuration Parsing Test" "$REPO_ROOT/scripts/validate_configs.sh" --timeout=120 || exit 1
 
 # Phase 2: Terraform Tests
 echo -e "\n${BOLD}${BLUE}Running Phase 2: Terraform Tests${NC}"
-run_test "Terraform Validation Test" "$REPO_ROOT/scripts/test_terraform_validation.sh" --timeout=180 || true
-run_test "Terraform Plan Verification Test (Dev)" "$REPO_ROOT/scripts/test_terraform_plan.sh" "dev" --timeout=300 || true
-run_test "Terraform State Isolation Test" "$REPO_ROOT/scripts/test_terraform_state_isolation.sh" --timeout=240 || true
+run_test "Terraform Validation Test" "$REPO_ROOT/scripts/test_terraform_validation.sh" --timeout=180 || exit 1
+run_test "Terraform Plan Verification Test (Dev)" "$REPO_ROOT/scripts/test_terraform_plan.sh" "dev" --timeout=300 || exit 1
+run_test "Terraform State Isolation Test" "$REPO_ROOT/scripts/test_terraform_state_isolation.sh" --timeout=240 || exit 1
 
 # Phase 3: Ansible Tests
 echo -e "\n${BOLD}${BLUE}Running Phase 3: Ansible Tests${NC}"
-run_test "Ansible Lint Test" "$REPO_ROOT/scripts/test_ansible_lint.sh" --timeout=120 || true
-run_ansible_syntax_test "prod" || true
-run_ansible_syntax_test "dev" || true
-run_ansible_syntax_test "staging" || true
-run_test "Ansible Roles Validation" "$REPO_ROOT/scripts/test_ansible_roles.sh" --timeout=120 || true
-run_test "Ansible-Terraform Integration Test" "$REPO_ROOT/scripts/test_terraform_ansible_integration.sh" --timeout=360 || true
+run_test "Ansible Lint Test" "$REPO_ROOT/scripts/test_ansible_lint.sh" --timeout=120 || exit 1
+run_ansible_syntax_test "prod" || exit 1
+run_ansible_syntax_test "dev" || exit 1
+run_ansible_syntax_test "staging" || exit 1
+run_test "Ansible Roles Validation" "$REPO_ROOT/scripts/test_ansible_roles.sh" --timeout=120 || exit 1
+run_test "Ansible-Terraform Integration Test" "$REPO_ROOT/scripts/test_terraform_ansible_integration.sh" --timeout=360 || exit 1
 
 # Print summary
 echo -e "\n=================================================================="

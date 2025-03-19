@@ -68,7 +68,7 @@ jobs:
       - name: Run syntax check
         run: |
           for playbook in ansible/playbooks/*/site.yml; do
-            ansible-playbook --syntax-check $playbook -i ansible/inventory
+            ansible-playbook --syntax-check $playbook -i ansible/inventory/dev -i ansible/inventory/staging -i ansible/inventory/prod
           done
 
   terraform-ansible-integration:

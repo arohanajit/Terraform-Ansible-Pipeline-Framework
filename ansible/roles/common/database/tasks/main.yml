@@ -1,0 +1,5 @@
+---
+# Common database tasks
+- name: Placeholder task for database role
+  debug:
+    msg: "Database role placeholder" 

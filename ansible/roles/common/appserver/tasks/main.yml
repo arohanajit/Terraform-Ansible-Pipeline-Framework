@@ -1,0 +1,5 @@
+---
+# Common appserver tasks
+- name: Placeholder task for appserver role
+  debug:
+    msg: "Appserver role placeholder" 

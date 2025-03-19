@@ -4,7 +4,7 @@
   hosts: webservers
   become: true
   vars:
-    environment: dev
+    env_type: dev
   roles:
     - role: webserver
       tags: [webserver]
@@ -13,7 +13,7 @@
   hosts: appservers
   become: true
   vars:
-    environment: dev
+    env_type: dev
   roles:
     - role: appserver
       tags: [appserver]
@@ -22,7 +22,7 @@
   hosts: dbservers
   become: true
   vars:
-    environment: dev
+    env_type: dev
   roles:
     - role: database
       tags: [database]
@@ -31,7 +31,7 @@
   hosts: monitoring
   become: true
   vars:
-    environment: dev
+    env_type: dev
   roles:
     - role: monitoring
       tags: [monitoring]

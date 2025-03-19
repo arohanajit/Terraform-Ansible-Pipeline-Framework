@@ -1,0 +1,6 @@
+---
+# Monitoring Role Handlers for Development Environment
+
+- name: Restart monitoring
+  ansible.builtin.debug:
+    msg: "This would restart monitoring services in production, but is a no-op in development" 

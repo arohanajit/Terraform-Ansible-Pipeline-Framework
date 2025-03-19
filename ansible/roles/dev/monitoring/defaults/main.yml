@@ -1,0 +1,7 @@
+---
+# Monitoring Role Default Variables for Development Environment
+
+# Monitoring Configuration
+dev_monitoring_log_dir: "/var/log/dev-monitoring"
+dev_monitoring_user: "dev_user"
+dev_monitoring_group: "dev_group" 

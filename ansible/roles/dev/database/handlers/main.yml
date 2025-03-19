@@ -1,0 +1,6 @@
+---
+# Database Role Handlers for Development Environment
+
+- name: Restart sqlite
+  ansible.builtin.debug:
+    msg: "This is a mock handler as SQLite doesn't need restarting in development" 

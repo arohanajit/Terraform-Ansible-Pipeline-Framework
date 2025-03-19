@@ -6,7 +6,8 @@
   vars:
     environment: dev
   roles:
-    - { role: dev/webserver, tags: [webserver] }
+    - role: webserver
+      tags: [webserver]
 
 - name: Configure App Servers
   hosts: appservers
@@ -14,7 +15,8 @@
   vars:
     environment: dev
   roles:
-    - { role: dev/appserver, tags: [appserver] }
+    - role: appserver
+      tags: [appserver]
 
 - name: Configure Database Servers
   hosts: dbservers
@@ -22,7 +24,8 @@
   vars:
     environment: dev
   roles:
-    - { role: dev/database, tags: [database] }
+    - role: database
+      tags: [database]
 
 - name: Configure Monitoring
   hosts: monitoring
@@ -30,4 +33,5 @@
   vars:
     environment: dev
   roles:
-    - { role: dev/monitoring, tags: [monitoring] }
+    - role: monitoring
+      tags: [monitoring]

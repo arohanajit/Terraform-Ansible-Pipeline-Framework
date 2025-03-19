@@ -1,0 +1,20 @@
+---
+# Monitoring Server Configuration Tasks for Development Environment
+
+- name: Install minimal monitoring tools
+  ansible.builtin.apt:
+    name:
+      - htop
+      - glances
+    state: present
+    update_cache: true
+  tags: [install, monitoring]
+
+- name: Configure log directory
+  ansible.builtin.file:
+    path: "{{ dev_monitoring_log_dir | default('/var/log/dev-monitoring') }}"
+    state: directory
+    owner: "{{ dev_monitoring_user | default('dev_user') }}"
+    group: "{{ dev_monitoring_group | default('dev_group') }}"
+    mode: '0755'
+  tags: [setup, monitoring] 

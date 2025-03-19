@@ -1,0 +1,18 @@
+---
+# Database Server Configuration Tasks for Development Environment
+
+- name: Install SQLite (dev environment uses lightweight DB)
+  ansible.builtin.apt:
+    name: sqlite3
+    state: present
+    update_cache: true
+  tags: [install, database]
+
+- name: Create application database directory
+  ansible.builtin.file:
+    path: "{{ dev_db_dir | default('/var/db/dev') }}"
+    state: directory
+    owner: "{{ dev_db_user | default('dev_user') }}"
+    group: "{{ dev_db_group | default('dev_group') }}"
+    mode: '0755'
+  tags: [setup, database] 

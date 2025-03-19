@@ -4,4 +4,4 @@
   hosts: appservers
   become: true
   roles:
-    - prod/appserver 
+    - appserver 

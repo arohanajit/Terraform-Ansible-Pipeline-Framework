@@ -1,16 +1,3 @@
 ---
-# Database Role Default Variables
-
-# Database Configuration
-prod_db_name: "application_db"
-prod_db_user: "app_user"
-prod_db_password: "changeme"
-prod_db_allowed_host: "%"
-prod_mysql_max_connections: 150
-prod_mysql_port: 3306
-prod_mysql_bind_address: "0.0.0.0"
-
-# Backup Configuration
-prod_mysql_backup_directory: "/var/backups/mysql"
-prod_mysql_backup_retention_days: 7
+# Default variables for prod/database
 

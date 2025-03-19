@@ -1,7 +1,3 @@
 ---
-# Webserver Role Defaults for Staging Environment
+# Default variables for staging/webserver
 
-staging_nginx_worker_processes: 4
-staging_nginx_worker_connections: 1024
-staging_nginx_keepalive_timeout: 65
-staging_nginx_client_max_body_size: "10m"

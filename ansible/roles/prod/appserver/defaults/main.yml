@@ -1,16 +1,3 @@
 ---
-# Application Server Role Default Variables
-
-# Application Configuration
-prod_app_dir: "/var/www/app"
-prod_app_user: "app_user"
-prod_app_group: "app_group"
-
-# Environment Configuration
-prod_app_env: "production"
-prod_app_port: 3000
-prod_app_node_env: "production"
-
-# Process Management
-prod_pm2_instances: 4
+# Default variables for prod/appserver
 

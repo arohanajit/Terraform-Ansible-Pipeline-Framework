@@ -1,19 +1,3 @@
 ---
-# Monitoring Role Default Variables
-
-# Prometheus Configuration
-prod_prometheus_global_scrape_interval: "15s"
-prod_prometheus_global_evaluation_interval: "15s"
-prod_prometheus_alertmanager_timeout: "10s"
-
-# Grafana Configuration
-prod_grafana_admin_user: "admin"
-prod_grafana_admin_password: "changeme"
-prod_grafana_install_plugins:
-  - "grafana-clock-panel"
-  - "grafana-simple-json-datasource"
-
-# Node Exporter Configuration
-prod_prometheus_node_exporter_targets:
-  - "localhost:9100"
+# Default variables for prod/monitoring
 

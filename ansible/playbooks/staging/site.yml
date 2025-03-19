@@ -4,30 +4,30 @@
   hosts: webservers
   become: true
   vars:
-    environment: staging
+    environment: "staging"
   roles:
-    - { role: staging/webserver, tags: [webserver] }
+    - { role: webserver, tags: [webserver] }
 
 - name: Configure App Servers
   hosts: appservers
   become: true
   vars:
-    environment: staging
+    environment: "staging"
   roles:
-    - { role: staging/appserver, tags: [appserver] }
+    - { role: appserver, tags: [appserver] }
 
 - name: Configure Database Servers
   hosts: dbservers
   become: true
   vars:
-    environment: staging
+    environment: "staging"
   roles:
-    - { role: staging/database, tags: [database] }
+    - { role: database, tags: [database] }
 
 - name: Configure Monitoring
   hosts: monitoring
   become: true
   vars:
-    environment: staging
+    environment: "staging"
   roles:
-    - { role: staging/monitoring, tags: [monitoring] }
+    - { role: monitoring, tags: [monitoring] }

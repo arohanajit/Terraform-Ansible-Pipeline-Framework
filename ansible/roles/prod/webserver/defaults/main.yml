@@ -1,12 +1,3 @@
 ---
-# Webserver Role Default Variables
-
-# Content Configuration
-prod_web_content_dir: "/var/www/html"
-
-# Nginx Configuration
-prod_nginx_worker_processes: "auto"
-prod_nginx_worker_connections: 1024
-prod_nginx_keepalive_timeout: 65
-prod_nginx_client_max_body_size: "1m"
+# Default variables for prod/webserver
 

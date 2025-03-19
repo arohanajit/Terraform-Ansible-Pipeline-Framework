@@ -1,21 +1,3 @@
 ---
-# Webserver Role Tasks for Staging Environment
+# Tasks for webserver
 
-- name: Install Nginx
-  ansible.builtin.apt:
-    name: nginx
-    state: present
-    update_cache: true
-
-- name: Start Nginx Service
-  ansible.builtin.service:
-    name: nginx
-    state: started
-    enabled: true
-
-- name: Configure Nginx for staging
-  ansible.builtin.template:
-    src: nginx.conf.j2
-    dest: /etc/nginx/nginx.conf
-    mode: '0644'
-  notify: Restart Nginx

@@ -56,7 +56,8 @@ ansible/*.log
 ansible/*.err
 ansible/__pycache__/
 ansible/roles/**/__pycache__/
-ansible/collections/
+ansible/collections/*
+!ansible/collections/requirements.yml
 ansible/inventory/hosts.yml
 ansible/vault_password_file
 ansible/inventory/**/host_vars/
